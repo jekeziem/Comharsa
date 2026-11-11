@@ -6,7 +6,7 @@
 
 *comharsa is irish for neighbour.*
 
-an initiative for [**AIMSIR**](https://www.ucd.ie/aimsir/about), in association with **University College Dublin**
+an initiative for [**AIMSIR**](https://www.ucd.ie/aimsir/about), in association with **Met Éireann** and **University College Dublin**
 
 [**try the prototype →**](https://jekeziem.github.io/comharsa/)
 
@@ -76,7 +76,7 @@ To run it locally, download `index.html` and open it in a browser. It's one file
 
 ## about this initiative
 
-Comharsa is an initiative undertaken for [AIMSIR](https://www.ucd.ie/aimsir/about), the Centre for AI, Meteorological Services, Innovation and Research, in association with University College Dublin. AIMSIR works on AI for weather, flood and climate services in Ireland. Comharsa looks at the other end of the forecast: what happens on a street once the warning comes true and the power goes.
+Comharsa is an initiative undertaken for [AIMSIR](https://www.ucd.ie/aimsir/about), the Centre for AI, Meteorological Services, Innovation and Research, in association with Met Éireann and University College Dublin. AIMSIR works on AI for weather, flood and climate services in Ireland. Comharsa looks at the other end of the forecast: what happens on a street once the warning comes true and the power goes.
 
 ## credits
 
