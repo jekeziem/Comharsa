@@ -1,0 +1,501 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Comharsa: a room for your street that opens when the power goes.">
+<title>Comharsa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500&display=swap">
+<style>
+/* layout: an apple-clean product page. centred story and numbers, then the phone beside four short notes, then a note from jenny. white throughout, colour only where it means something */
+:root{
+  --bg:#ffffff;
+  --bg-2:#f5f5f7;
+  --ink:#1d1d1f;
+  --muted:#6e6e73;
+  --faint:#a1a1a6;
+  --line:#e5e5ea;
+  --brand:#2b3cf2;
+  --ok:#34c759;
+  --need:#ff3b30;
+  --help:#0a84ff;
+  --none:#c7c7cc;
+  --bubble:#e9e9eb;
+  --sans:"Geist", -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Helvetica, Arial, sans-serif;
+  --mono:"Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+:focus-visible{outline:3px solid var(--brand);outline-offset:3px;border-radius:8px}
+.wrap{max-width:1080px;margin:0 auto;padding-left:max(20px, env(safe-area-inset-left, 0px));padding-right:max(20px, env(safe-area-inset-right, 0px))}
+
+/* top */
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-block:18px;border-bottom:1px solid var(--line)}
+.word{display:flex;align-items:center;gap:9px;font-weight:700;font-size:18px;letter-spacing:-.02em}
+.word svg{width:26px;height:26px}
+.top small{color:var(--muted);font-size:14px}
+
+/* story */
+.story{text-align:center;padding-block:84px 30px}
+.eyebrow{font-family:var(--mono);font-size:13px;letter-spacing:.06em;color:var(--muted)}
+.story h1{font-weight:700;font-size:clamp(2.5rem, 6.6vw, 4.9rem);line-height:1.02;letter-spacing:-.045em;margin:18px auto 0;max-width:15ch;text-wrap:balance}
+.story h1 span{color:var(--faint)}
+.lede{margin:26px auto 0;max-width:46ch;font-size:clamp(1.1rem, 2vw, 1.3rem);color:var(--muted);line-height:1.5;text-wrap:balance}
+.lede b{color:var(--ink);font-weight:600}
+.stats{display:grid;grid-template-columns:repeat(3, minmax(0,1fr));max-width:880px;margin:64px auto 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+@media (max-width:720px){.stats{grid-template-columns:1fr}}
+.stat{padding:28px 18px;text-align:center}
+.stat + .stat{border-left:1px solid var(--line)}
+@media (max-width:720px){.stat + .stat{border-left:0;border-top:1px solid var(--line)}}
+.stat b{display:block;font-weight:700;font-size:clamp(2.4rem, 5vw, 3.4rem);letter-spacing:-.04em;line-height:1;font-variant-numeric:tabular-nums}
+.stat span{display:block;margin-top:10px;color:var(--muted);font-size:15px}
+.src{margin-top:12px;font-size:13px;color:var(--faint)}
+.src a{color:var(--faint)}
+
+/* demo */
+.demo{display:grid;grid-template-columns:390px minmax(0,1fr);gap:72px;align-items:start;padding-block:80px 40px}
+@media (max-width:920px){.demo{grid-template-columns:1fr;gap:44px;justify-items:center}.demo > div{width:100%;max-width:390px}.notes{max-width:560px!important}}
+.controls{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:18px}
+.cut{font:inherit;font-weight:600;font-size:16px;background:var(--ink);color:#fff;border:0;border-radius:999px;padding:12px 22px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition:transform .12s, background .2s}
+.cut:hover{transform:scale(1.02)}
+.cut.ghost{background:var(--bg-2);color:var(--muted)}
+.cut svg{width:16px;height:16px}
+.sim{font-size:13.5px;color:var(--muted)}
+
+/* phone */
+.phone{width:100%;max-width:390px;background:#1d1d1f;border-radius:52px;padding:11px;box-shadow:0 40px 80px -30px rgba(0,0,0,.35)}
+.screen{position:relative;height:740px;max-height:84vh;min-height:620px;background:#fff;border-radius:42px;overflow:hidden;display:flex;flex-direction:column}
+.statusbar{display:flex;justify-content:space-between;align-items:center;padding:15px 28px 4px;font-size:15px;font-weight:600;font-variant-numeric:tabular-nums}
+.sig{display:flex;gap:7px;align-items:center;font-size:13px}
+.nosvc{color:var(--need);font-weight:600}
+.batt{display:inline-block;width:25px;height:12px;border:1.5px solid var(--ink);border-radius:4px;position:relative;opacity:.9}
+.batt::after{content:"";position:absolute;left:1.5px;top:1.5px;bottom:1.5px;width:calc(var(--b,64%) - 3px);background:var(--ink);border-radius:1.5px}
+
+.idle{flex:1;display:grid;place-items:center;text-align:center;padding:30px}
+.appicon{width:72px;height:72px;margin:0 auto 18px;border-radius:18px;display:block}
+.idle h3{margin:0;font-weight:700;font-size:22px;letter-spacing:-.02em}
+.idle p{margin:8px auto 0;max-width:24ch;font-size:15px;color:var(--muted)}
+
+/* notification */
+.banner{position:absolute;left:10px;right:10px;top:48px;z-index:5;display:flex;gap:11px;align-items:flex-start;background:rgba(246,246,248,.92);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);border-radius:22px;padding:13px 14px;box-shadow:0 10px 40px rgba(0,0,0,.14);transform:translateY(-160%);transition:transform .5s cubic-bezier(.2,.9,.3,1.1)}
+.banner.show{transform:none}
+.banner .appicon{width:38px;height:38px;border-radius:9px;margin:0;flex:0 0 auto}
+.banner small{display:flex;justify-content:space-between;font-size:12.5px;color:var(--muted);font-weight:500}
+.banner b{display:block;margin-top:2px;font-size:15px;font-weight:600}
+.banner p{margin:1px 0 10px;font-size:14px;color:#3a3a3c}
+.banner button{font:inherit;font-weight:600;font-size:14px;background:var(--ink);color:#fff;border:0;border-radius:999px;padding:7px 16px;cursor:pointer}
+
+/* room */
+.room{flex:1;display:flex;flex-direction:column;min-height:0}
+.room-head{padding:6px 20px 10px}
+.room-head small{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--muted);font-weight:500}
+.room-head small i{width:7px;height:7px;border-radius:50%;background:var(--ok);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:.35}50%{opacity:1}}
+@media (prefers-reduced-motion: reduce){.room-head small i{animation:none}}
+.room-head h3{margin:2px 0 0;font-weight:700;font-size:28px;letter-spacing:-.035em;line-height:1.1}
+.seg{display:flex;margin:0 16px;padding:2px;background:#eeeef0;border-radius:10px}
+.seg button{flex:1;font:inherit;font-size:13.5px;font-weight:600;color:var(--ink);background:none;border:0;border-radius:8px;padding:6px 0;cursor:pointer;position:relative}
+.seg button[aria-selected="true"]{background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.seg .count{display:inline-block;min-width:17px;margin-left:5px;padding:0 5px;border-radius:9px;background:var(--need);color:#fff;font-size:11px;line-height:17px}
+.pane{flex:1;min-height:0;display:flex;flex-direction:column}
+.pane[hidden]{display:none!important}
+
+.people{display:flex;gap:14px;overflow-x:auto;padding:12px 16px 10px;border-bottom:1px solid var(--line);scrollbar-width:none}
+.people::-webkit-scrollbar{display:none}
+.person{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:11.5px;color:var(--muted);width:46px;text-align:center}
+.person.me{color:var(--brand);font-weight:600}
+.av{position:relative;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:var(--bg-2);font-weight:600;font-size:15px;color:var(--ink);box-shadow:0 0 0 2.5px var(--c, var(--none))}
+.av.sm{width:28px;height:28px;font-size:12px;box-shadow:0 0 0 2px var(--c, var(--none));flex:0 0 auto}
+
+.log{flex:1;min-height:0;overflow-y:auto;padding:12px 14px 8px;display:flex;flex-direction:column;gap:10px}
+.msg{display:flex;gap:8px;align-items:flex-end;max-width:88%}
+.msg .who{font-size:11.5px;color:var(--muted);margin:0 0 2px 10px}
+.msg .who .t{font-family:var(--mono);font-size:10.5px;color:var(--faint);margin-left:5px}
+.msg .bub{background:var(--bubble);border-radius:18px;padding:8px 12px;font-size:15px;line-height:1.35}
+.msg.me{align-self:flex-end;flex-direction:row-reverse}
+.msg.me .bub{background:var(--brand);color:#fff}
+.msg.me .who{text-align:right;margin:0 10px 2px 0}
+.sys{align-self:center;max-width:90%;text-align:center;font-size:12.5px;color:var(--muted);line-height:1.4}
+
+.checkin{display:flex;gap:7px;padding:9px 14px 0;border-top:1px solid var(--line)}
+.ck{flex:1;font:inherit;font-size:13.5px;font-weight:600;border:0;border-radius:999px;padding:9px 4px;cursor:pointer;background:color-mix(in srgb, var(--c) 13%, #fff);color:color-mix(in srgb, var(--c) 82%, #000);transition:background .15s, color .15s}
+.ck.ok{--c:var(--ok)}.ck.need{--c:var(--need)}.ck.help{--c:var(--help)}
+.ck[aria-pressed="true"]{background:var(--c);color:#fff}
+.composer{display:flex;gap:8px;align-items:center;padding:9px 14px 16px}
+.composer input{flex:1;min-width:0;font:inherit;font-size:15px;color:var(--ink);background:#fff;border:1px solid #d1d1d6;border-radius:999px;padding:8px 14px}
+.composer button{width:34px;height:34px;flex:0 0 auto;border-radius:50%;border:0;background:var(--brand);color:#fff;display:grid;place-items:center;cursor:pointer}
+.composer button svg{width:16px;height:16px}
+
+/* updates */
+.updates{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;background:#f2f2f7}
+.upd{background:#fff;border-radius:16px;padding:14px}
+.upd p{margin:0;font-weight:600;font-size:15px;line-height:1.35}
+.upd small{display:block;color:var(--muted);font-size:12.5px;margin-top:4px}
+.meter{display:flex;align-items:center;gap:7px;margin-top:10px;font-size:12.5px;color:var(--muted)}
+.meter i{width:9px;height:9px;border-radius:50%;background:#e5e5ea}
+.meter i.on{background:var(--ok)}
+.upd.confirmed .meter{color:#248a3d;font-weight:600}
+.acts{display:flex;gap:8px;margin-top:12px}
+.acts button{font:inherit;font-size:13px;font-weight:600;border:0;border-radius:999px;padding:7px 13px;cursor:pointer;background:#f2f2f7;color:var(--ink)}
+.acts button.yes{background:var(--ink);color:#fff}
+.acts button[disabled]{opacity:.45;cursor:default}
+.empty{color:var(--muted);font-size:14px;text-align:center;padding:30px 10px}
+
+/* map */
+.mappane{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:12px;background:#f2f2f7}
+.card{background:#fff;border-radius:16px;padding:12px}
+.mappane svg{width:100%;height:auto;display:block}
+.mappane svg text{font-family:var(--sans)}
+.legend{display:flex;flex-wrap:wrap;gap:5px 14px;font-size:12px;color:var(--muted);margin-top:8px}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.legend i{width:10px;height:10px;border-radius:50%;display:inline-block}
+.privacy{font-size:13.5px;line-height:1.45;color:#3a3a3c}
+.switch{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:10px;padding-top:10px;border-top:1px solid var(--line);font-weight:600;color:var(--ink)}
+.switch input{appearance:none;-webkit-appearance:none;width:46px;height:28px;border-radius:999px;background:#e9e9eb;position:relative;cursor:pointer;transition:background .2s;flex:0 0 auto}
+.switch input::after{content:"";position:absolute;top:2px;left:2px;width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 2px 4px rgba(0,0,0,.2);transition:transform .2s}
+.switch input:checked{background:var(--ok)}
+.switch input:checked::after{transform:translateX(18px)}
+
+/* notes */
+.notes{display:flex;flex-direction:column;gap:38px;padding-top:62px;max-width:520px}
+.note h3{margin:0;font-weight:700;font-size:24px;letter-spacing:-.03em;line-height:1.2}
+.note .tag{display:block;font-family:var(--mono);font-size:12.5px;color:var(--faint);margin-bottom:8px}
+.note p{margin:8px 0 0;color:var(--muted);font-size:17px;line-height:1.55}
+
+/* from jenny */
+.from{padding-block:70px 90px}
+.from .inner{max-width:640px;margin:0 auto;text-align:center}
+.from .eyebrow{display:block;margin-bottom:18px}
+.from p{margin:0;font-size:clamp(1.3rem, 2.6vw, 1.7rem);line-height:1.4;letter-spacing:-.02em;font-weight:500;text-wrap:balance}
+.from p span{color:var(--muted)}
+.from .sig2{margin-top:22px;font-size:15px;color:var(--muted)}
+.from .sig2 a{color:var(--ink)}
+
+footer{border-top:1px solid var(--line);background:var(--bg-2)}
+footer .wrap{padding-block:22px;font-size:13px;color:var(--muted);display:flex;flex-wrap:wrap;gap:8px 20px;justify-content:space-between}
+footer a{color:var(--muted)}
+</style>
+
+<style>body{margin:0}[hidden]{display:none!important}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
+</head>
+<body>
+<header class="wrap top">
+  <span class="word"><svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="16" fill="#1d1d1f"/><path d="M18 43V29l14-10 14 10v14" fill="none" stroke="#fff" stroke-width="4.5" stroke-linejoin="round"/><circle cx="32" cy="35" r="4.5" fill="#34c759"/></svg>comharsa</span>
+  <small>a prototype by jenny ekeziem</small>
+</header>
+
+<main>
+  <section class="wrap story" aria-labelledby="h">
+    <span class="eyebrow">storm éowyn · friday 24 january 2025</span>
+    <h1 id="h">the advice was to check a website. <span>the website needed power.</span></h1>
+    <p class="lede"><b>comharsa</b> is irish for neighbour. it's a room for your street that opens when the power goes. no signal, no wi-fi, no account. phones pass messages to each other over bluetooth.</p>
+    <div class="stats">
+      <div class="stat"><b>768,000</b><span>homes and businesses lost power</span></div>
+      <div class="stat"><b>~30%</b><span>of eir's mobile sites went down</span></div>
+      <div class="stat"><b>160,000</b><span>homes and businesses lost broadband</span></div>
+    </div>
+    <p class="src">ESB, eir and Vodafone figures at the peak, via <a href="https://www.echolive.ie/nationalnews/arid-41560450.html" target="_blank" rel="noopener">Echo Live</a></p>
+  </section>
+
+  <section class="wrap demo" aria-label="Interactive prototype">
+    <div>
+      <div class="controls">
+        <button class="cut" id="cut" type="button"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg><span id="cut-label">cut the power</span></button>
+        <span class="sim" id="sim">the neighbours here are simulated.</span>
+      </div>
+      <div class="phone">
+        <div class="screen" id="screen">
+          <div class="statusbar"><span id="clock">08:11</span><span class="sig"><span id="net">eir 4G</span><i class="batt" id="bicon"></i></span></div>
+          <div class="banner" id="banner" role="alert">
+            <svg class="appicon" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="16" fill="#1d1d1f"/><path d="M18 43V29l14-10 14 10v14" fill="none" stroke="#fff" stroke-width="4.5" stroke-linejoin="round"/><circle cx="32" cy="35" r="4.5" fill="#34c759"/></svg>
+            <div style="flex:1;min-width:0">
+              <small><span>COMHARSA</span><span>now</span></small>
+              <b>power's out on ashgrove terrace</b>
+              <p>7 phones nearby. your street has a room.</p>
+              <button type="button" id="join">join</button>
+            </div>
+          </div>
+          <div class="idle" id="idle">
+            <div>
+              <svg class="appicon" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="16" fill="#1d1d1f"/><path d="M18 43V29l14-10 14 10v14" fill="none" stroke="#fff" stroke-width="4.5" stroke-linejoin="round"/><circle cx="32" cy="35" r="4.5" fill="#c7c7cc"/></svg>
+              <h3>all quiet</h3>
+              <p>comharsa wakes up when the power and the network go down on your street.</p>
+            </div>
+          </div>
+          <div class="room" id="room" hidden>
+            <div class="room-head">
+              <small><i></i><span id="roomsub">7 here · bluetooth · no signal needed</span></small>
+              <h3>Ashgrove Terrace</h3>
+            </div>
+            <div class="seg" role="tablist">
+              <button role="tab" id="t-room" aria-selected="true" aria-controls="p-room">room</button>
+              <button role="tab" id="t-upd" aria-selected="false" aria-controls="p-upd">updates<span class="count" id="updcount" hidden>0</span></button>
+              <button role="tab" id="t-map" aria-selected="false" aria-controls="p-map">map</button>
+            </div>
+            <div class="pane" id="p-room" role="tabpanel" aria-labelledby="t-room">
+              <div class="people" id="users" aria-label="People on the street"></div>
+              <div class="log" id="log" aria-live="polite"></div>
+            </div>
+            <div class="pane" id="p-upd" role="tabpanel" aria-labelledby="t-upd" hidden>
+              <div class="updates" id="updates"></div>
+            </div>
+            <div class="pane" id="p-map" role="tabpanel" aria-labelledby="t-map" hidden>
+              <div class="mappane">
+                <div class="card">
+                  <svg id="map" viewBox="0 0 320 210" role="img" aria-label="Street map of Ashgrove Terrace showing who has checked in"></svg>
+                  <div class="legend"><span><i style="background:var(--ok)"></i>ok</span><span><i style="background:var(--need)"></i>needs help</span><span><i style="background:var(--help)"></i>can help</span><span><i style="background:var(--none)"></i>not checked in</span></div>
+                </div>
+                <div class="card privacy">only phones in this room can see the map. it deletes itself 24 hours after the power comes back.
+                  <label class="switch" for="showme">show my house <input type="checkbox" id="showme" role="switch" checked></label>
+                </div>
+              </div>
+            </div>
+            <div class="checkin" role="group" aria-label="Check in">
+              <button class="ck ok" type="button" data-s="ok" aria-pressed="false">i'm ok</button>
+              <button class="ck need" type="button" data-s="need" aria-pressed="false">need help</button>
+              <button class="ck help" type="button" data-s="help" aria-pressed="false">can help</button>
+            </div>
+            <form class="composer" id="composer">
+              <input id="msg" type="text" maxlength="160" autocomplete="off" placeholder="message your street" aria-label="Message your street">
+              <button type="submit" aria-label="Send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="notes">
+      <div class="note"><span class="tag">works when nothing else does</span><h3>the room finds you.</h3><p>when the power and signal drop, phones on the same street find each other over bluetooth and pass messages along, house to house. nobody downloads anything mid-storm.</p></div>
+      <div class="note"><span class="tag">milling · mileti</span><h3>built for checking with each other.</h3><p>when people get a warning, they don't act straight away. they check with others first. so every update shows how many neighbours have seen it, and it only counts as confirmed once three have.</p></div>
+      <div class="note"><span class="tag">the bystander effect · latané &amp; darley</span><h3>"someone else will check on her."</h3><p>the more people who could help, the less each one feels it's on them. so check-ins say out loud who hasn't been heard from, and it stops being someone else's job to go and knock.</p></div>
+      <div class="note"><span class="tag">safety first</span><h3>a map that forgets.</h3><p>a map of who's home in a storm is also a map of who's alone. so only the room sees it, anyone can hide their house, and it's gone 24 hours after the lights come back.</p></div>
+    </div>
+  </section>
+
+  <section class="wrap from" aria-label="A note from Jenny">
+    <div class="inner">
+      <span class="eyebrow">why i made this</span>
+      <p>when something goes wrong, people don't need a smarter system. <span>they need to know the people next door are ok.</span> comharsa just makes the knock easier.</p>
+      <p class="sig2">jenny ekeziem · dublin · designed to run on <a href="https://github.com/permissionlesstech/bitchat" target="_blank" rel="noopener">bitchat</a>'s open bluetooth mesh</p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap"><span>comharsa · prototype, 2025</span><span>neighbours, street and messages in the demo are fictional</span></div>
+</footer>
+
+<script>
+(function(){
+  var C = {ok:"#34c759", need:"#ff3b30", help:"#0a84ff", none:"#c7c7cc"};
+  var LABEL = {ok:"is ok", need:"needs help", help:"can help"};
+  var people, me, updates, timers, clock, phase, tab, unseen, restoreReady = false;
+  var $ = function(id){ return document.getElementById(id); };
+  function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
+  function av(p, sm){ return '<span class="av' + (sm ? ' sm' : '') + '" style="--c:' + C[p.s] + '">' + esc(p.name.charAt(0)) + '</span>'; }
+
+  function reset(){
+    timers && timers.forEach(clearTimeout);
+    timers = [];
+    people = [
+      {id:"you", name:"You", house:12, s:"none"},
+      {id:"aoife", name:"Aoife", house:4, s:"none"},
+      {id:"dev", name:"Dev", house:9, s:"none"},
+      {id:"marta", name:"Marta", house:7, s:"none"},
+      {id:"sean", name:"Seán", house:16, s:"none"},
+      {id:"tomas", name:"Tomás", house:11, s:"none"},
+      {id:"brid", name:"Bríd", house:14, s:"none"}
+    ];
+    me = people[0];
+    updates = []; unseen = 0; tab = "room";
+    $("log").innerHTML = ""; $("updates").innerHTML = "";
+    Array.prototype.forEach.call(document.querySelectorAll(".ck"), function(b){ b.setAttribute("aria-pressed","false"); });
+    $("showme").checked = true;
+    selectTab("room");
+  }
+  function P(id){ for (var i=0;i<people.length;i++) if (people[i].id === id) return people[i]; }
+  function stamp(){ var h = Math.floor(clock/60), m = clock % 60; return (h<10?"0":"")+h+":"+(m<10?"0":"")+m; }
+  function tick(n){ clock += n || 1; $("clock").textContent = stamp(); }
+  function later(ms, fn){ timers.push(setTimeout(fn, ms)); }
+
+  function say(id, text){
+    var p = id ? P(id) : null, el = document.createElement("div");
+    if (!p){ el.className = "sys"; el.textContent = text; }
+    else {
+      el.className = "msg" + (p === me ? " me" : "");
+      el.innerHTML = av(p, true) + '<div><div class="who">' + (p === me ? 'you' : esc(p.name)) + '<span class="t">' + stamp() + '</span></div><div class="bub">' + esc(text) + '</div></div>';
+    }
+    $("log").appendChild(el);
+    $("log").scrollTop = $("log").scrollHeight;
+  }
+  function setStatus(id, s, silent){
+    var p = P(id); p.s = s;
+    renderUsers(); renderMap();
+    if (!silent) say(null, p === me ? ({ok:"you're checked in as ok.", need:"you asked for help. your street can see this.", help:"you said you can help. your street can see this."})[s] : p.name + " " + LABEL[s] + ".");
+  }
+  function renderUsers(){
+    var order = {need:0, none:1, help:2, ok:3};
+    $("users").innerHTML = people.slice().sort(function(a,b){ return (a === me ? -1 : b === me ? 1 : order[a.s] - order[b.s]); }).map(function(p){
+      return '<div class="person' + (p === me ? ' me' : '') + '" title="' + esc(p.name) + ', no. ' + p.house + '">' + av(p) + (p === me ? 'you' : esc(p.name)) + '</div>';
+    }).join("");
+  }
+
+  /* updates that need three neighbours: designing for milling */
+  function addUpdate(text, by, from){
+    var u = {id:updates.length, text:text, by:by, from:from, yes:{}, no:{}};
+    u.yes[by] = true; updates.unshift(u);
+    if (tab !== "upd"){ unseen++; badge(); }
+    renderUpdates(); return u;
+  }
+  function confirm(u, who){ u.yes[who] = true; delete u.no[who]; renderUpdates(); }
+  function count(o){ return Object.keys(o).length; }
+  function renderUpdates(){
+    if (!updates.length){ $("updates").innerHTML = '<p class="empty">nothing reported yet. when a neighbour posts something the street should know, it shows up here.</p>'; return; }
+    $("updates").innerHTML = updates.map(function(u){
+      var n = Math.min(count(u.yes), 3), ok = count(u.yes) >= 3, mine = !!u.yes.you, doubted = count(u.no);
+      var who = P(u.by).name + (u.from ? ", " + u.from : "");
+      var dots = [0,1,2].map(function(i){ return '<i' + (i < n ? ' class="on"' : '') + '></i>'; }).join("");
+      return '<div class="upd' + (ok ? ' confirmed' : '') + '"><p>' + esc(u.text) + '</p><small>from ' + esc(who) + '</small>' +
+        '<div class="meter">' + dots + '<span>' + (ok ? 'confirmed by ' + count(u.yes) + ' neighbours' : n + ' of 3 neighbours have seen this') + (doubted ? ' · ' + doubted + ' not sure' : '') + '</span></div>' +
+        '<div class="acts"><button type="button" class="yes" data-u="' + u.id + '" data-a="yes"' + (mine ? ' disabled' : '') + '>' + (mine ? 'you confirmed' : 'i see it too') + '</button>' +
+        '<button type="button" data-u="' + u.id + '" data-a="no"' + (u.no.you || mine ? ' disabled' : '') + '>not sure</button></div></div>';
+    }).join("");
+  }
+  $("updates").addEventListener("click", function(e){
+    var b = e.target.closest("button[data-u]"); if (!b) return;
+    var u = updates.filter(function(x){ return x.id === +b.dataset.u; })[0];
+    if (b.dataset.a === "yes"){ confirm(u, "you"); if (count(u.yes) === 3) say(null, "confirmed by 3 neighbours: " + u.text.toLowerCase()); }
+    else { u.no.you = true; renderUpdates(); }
+  });
+  function badge(){ var c = $("updcount"); c.textContent = unseen; c.hidden = unseen === 0; }
+
+  /* street map */
+  function renderMap(){
+    var s = '<rect x="0" y="94" width="320" height="22" rx="11" fill="#f2f2f7"/>' +
+            '<text x="160" y="109" text-anchor="middle" font-size="9" font-weight="600" letter-spacing="1.5" fill="#a1a1a6">ASHGROVE TERRACE</text>';
+    var byHouse = {}; people.forEach(function(p){ byHouse[p.house] = p; });
+    for (var i=0;i<8;i++){
+      [ {n:1 + i*2, y:34}, {n:2 + i*2, y:138} ].forEach(function(h){
+        var x = 14 + i*38, p = byHouse[h.n], fill = "#ffffff", stroke = "#d1d1d6", label = "", ink = "#a1a1a6";
+        if (p){
+          var hidden = p === me && !$("showme").checked;
+          fill = hidden ? "#f2f2f7" : C[p.s]; stroke = hidden ? "#d1d1d6" : fill; ink = hidden || p.s === "none" ? "#6e6e73" : "#ffffff";
+          label = p === me ? (hidden ? "you, hidden" : "you") : p.name;
+        }
+        s += '<path d="M' + x + ' ' + (h.y+14) + 'l13 -11 13 11v24a3 3 0 0 1 -3 3h-20a3 3 0 0 1 -3 -3z" fill="' + fill + '" stroke="' + stroke + '" stroke-width="1.5" stroke-linejoin="round"/>' +
+             '<text x="' + (x+13) + '" y="' + (h.y+33) + '" text-anchor="middle" font-size="9.5" font-weight="600" fill="' + ink + '">' + h.n + '</text>' +
+             (label ? '<text x="' + (x+13) + '" y="' + (h.y < 94 ? h.y - 6 : h.y + 54) + '" text-anchor="middle" font-size="9" font-weight="500" fill="#6e6e73">' + esc(label) + '</text>' : '');
+      });
+    }
+    if (updates.some(function(u){ return /tree/i.test(u.text); })){
+      s += '<circle cx="10" cy="105" r="8" fill="#ff9500"/><path d="M7 105h6M10 102v6" stroke="#fff" stroke-width="2" stroke-linecap="round" transform="rotate(45 10 105)"/><text x="22" y="90" font-size="9" font-weight="600" fill="#c93400">tree down</text>';
+    }
+    $("map").innerHTML = s;
+  }
+  $("showme").addEventListener("change", renderMap);
+
+  function selectTab(t){
+    tab = t;
+    ["room","upd","map"].forEach(function(o){ $("t-" + o).setAttribute("aria-selected", String(o === t)); $("p-" + o).hidden = o !== t; });
+    if (t === "upd"){ unseen = 0; badge(); }
+  }
+  ["room","upd","map"].forEach(function(t){ $("t-" + t).addEventListener("click", function(){ selectTab(t); }); });
+
+  Array.prototype.forEach.call(document.querySelectorAll(".ck"), function(b){
+    b.addEventListener("click", function(){
+      if (phase !== "room" && phase !== "after") return;
+      Array.prototype.forEach.call(document.querySelectorAll(".ck"), function(o){ o.setAttribute("aria-pressed", String(o === b)); });
+      var s = b.dataset.s; setStatus("you", s);
+      if (phase !== "room") return;
+      if (s === "need"){
+        later(2200, function(){ tick(); say("dev", "what do you need? I've a gas stove and two torches, I'm at 9"); });
+        later(4600, function(){ tick(); say("aoife", "I can come over too, tell us what's up"); });
+      } else if (s === "help"){
+        later(2400, function(){ tick(); say("marta", "brilliant. Bríd at 14 is on her own, could someone look in on her?"); });
+      } else if (s === "ok"){
+        later(2600, function(){ tick(); say("tomas", "good stuff"); });
+      }
+    });
+  });
+
+  $("composer").addEventListener("submit", function(e){
+    e.preventDefault();
+    var v = $("msg").value.trim(); if (!v || (phase !== "room" && phase !== "after")) return;
+    tick(); say("you", v); $("msg").value = "";
+    if (phase !== "room") return;
+    if (/\?\s*$/.test(v)) later(2400, function(){ tick(); say("dev", "not sure. Seán has a bar of signal down at 16, he might know"); });
+    else if (/candle|torch|stove|water|food|heat|cold/i.test(v)) later(2400, function(){ tick(); say("marta", "I've spare candles at 7, call in anytime"); });
+  });
+
+  function cutPower(){
+    phase = "banner";
+    $("net").innerHTML = '<span class="nosvc">No Service</span>';
+    $("bicon").style.setProperty("--b","61%");
+    $("cut-label").textContent = "the power is out";
+    $("cut").classList.add("ghost"); $("cut").disabled = true;
+    tick();
+    later(900, function(){ $("banner").classList.add("show"); $("join").focus({preventScroll:true}); });
+  }
+  function join(){
+    phase = "room";
+    $("banner").classList.remove("show");
+    $("idle").hidden = true; $("room").hidden = false;
+    renderUsers(); renderUpdates(); renderMap();
+    say(null, "you joined Ashgrove Terrace. messages hop phone to phone over bluetooth, no signal needed.");
+    say(null, "tap below to let your street know how you are.");
+    var script = [
+      [1800, function(){ tick(); setStatus("aoife","ok",true); say("aoife", "power's gone here too at 4. anyone else?"); }],
+      [3800, function(){ tick(); setStatus("dev","ok",true); say("dev", "same at 9. no signal at all"); }],
+      [6400, function(){ tick(2); setStatus("sean","ok",true); say("sean", "I've one bar at the end of the road. ESB map says crews from tomorrow, some areas could be days");
+        addUpdate("ESB: repair crews from tomorrow. some areas could be without power for days.", "sean", "relayed from the ESB map"); }],
+      [9600, function(){ tick(); setStatus("marta","ok",true); say("marta", "big tree down at the top of the road, nobody drive that way");
+        var u = addUpdate("Tree down at the top of the road. Don't drive that way.", "marta"); renderMap();
+        later(2600, function(){ confirm(u, "dev"); say("dev", "can see it from my window, it's across both lanes"); }); }],
+      [12800, function(){ tick(); setStatus("tomas","ok",true); say("tomas", "all fine at 11. I've a full flask if anyone needs a hot drink"); }],
+      [16000, function(){ tick(3); say(null, "Bríd at no. 14 is in the room but hasn't checked in yet."); }],
+      [18600, function(){ tick(); say("aoife", "Bríd's on her own. I'll go knock"); setStatus("aoife","help",true); }],
+      [26000, function(){ tick(6); setStatus("brid","ok",true); say("aoife", "she's grand. cold but grand, phone was on silent. bringing her Tomás's flask"); }],
+      [29000, function(){
+        var tree = updates.filter(function(u){ return /tree/i.test(u.text); })[0];
+        if (tree && !tree.yes.you && count(tree.yes) < 3){ confirm(tree, "tomas"); tick(); say("tomas", "walked up to look, it's definitely down"); say(null, "confirmed by 3 neighbours: tree down at the top of the road."); }
+      }]
+    ];
+    script.forEach(function(s){ later(s[0], s[1]); });
+    later(30500, function(){ $("cut").disabled = false; $("cut").classList.remove("ghost"); $("cut-label").textContent = "bring the power back"; restoreReady = true; });
+  }
+  function restore(){
+    restoreReady = false;
+    $("net").textContent = "eir 4G";
+    tick(240);
+    say(null, "power's back on Ashgrove Terrace. this room, its messages and the map delete themselves in 24 hours.");
+    $("roomsub").textContent = "power's back · closing in 24 hours";
+    $("cut-label").textContent = "start again";
+    phase = "after";
+  }
+  $("join").addEventListener("click", join);
+  $("cut").addEventListener("click", function(){
+    if (phase === "idle") cutPower();
+    else if (phase === "room" && restoreReady) restore();
+    else if (phase === "after") start();
+  });
+
+  function start(){
+    reset();
+    phase = "idle";
+    $("room").hidden = true; $("idle").hidden = false; $("banner").classList.remove("show");
+    $("net").textContent = "eir 4G"; $("bicon").style.setProperty("--b","64%");
+    $("roomsub").textContent = "7 here · bluetooth · no signal needed";
+    $("cut-label").textContent = "cut the power"; $("cut").classList.remove("ghost"); $("cut").disabled = false;
+    clock = 8*60 + 11; $("clock").textContent = stamp();
+    renderUsers(); renderMap(); renderUpdates(); badge();
+  }
+  start();
+})();
+</script>
+
+</body>
+</html>
