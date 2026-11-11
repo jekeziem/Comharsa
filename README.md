@@ -6,6 +6,8 @@
 
 *comharsa is irish for neighbour.*
 
+first prototyped november 2025
+
 an initiative for [**AIMSIR**](https://www.ucd.ie/aimsir/about), in association with **Met Éireann** and **University College Dublin**
 
 [**try the prototype →**](https://jekeziem.github.io/comharsa/)
