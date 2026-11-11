@@ -6,6 +6,8 @@
 
 *comharsa is irish for neighbour.*
 
+an initiative for [**AIMSIR**](https://www.ucd.ie/aimsir/about), in association with **University College Dublin**
+
 [**try the prototype →**](https://jekeziem.github.io/comharsa/)
 
 ![Comharsa prototype page](docs/hero.png)
@@ -71,6 +73,10 @@ To run it locally, download `index.html` and open it in a browser. It's one file
 - [ ] **a mesh simulator in Python.** If 30% of the phones on a street die, does a message still reach no. 14? How many phones does a street need before the room works at all?
 - [ ] **getting it onto phones before the storm.** The people who'd need it most are the least likely to install a new app. The answer probably runs through councils, ESB, or community alert groups, not app stores.
 - [ ] **a real app** in React Native and Expo, talking to the same Bluetooth mesh.
+
+## about this initiative
+
+Comharsa is an initiative undertaken for [AIMSIR](https://www.ucd.ie/aimsir/about), the Centre for AI, Meteorological Services, Innovation and Research, in association with University College Dublin. AIMSIR works on AI for weather, flood and climate services in Ireland. Comharsa looks at the other end of the forecast: what happens on a street once the warning comes true and the power goes.
 
 ## credits
 
